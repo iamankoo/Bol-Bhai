@@ -1,0 +1,32 @@
+{
+  "name": "@bol-bhai/extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "lint": "eslint .",
+    "typecheck": "wxt prepare && tsc -p tsconfig.json --noEmit",
+    "format": "prettier . --check"
+  },
+  "dependencies": {
+    "@bol-bhai/shared": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "socket.io-client": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@bol-bhai/eslint-config": "workspace:*",
+    "@bol-bhai/tsconfig": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "tailwindcss": "catalog:",
+    "wxt": "catalog:"
+  }
+}

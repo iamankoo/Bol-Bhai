@@ -1,0 +1,474 @@
+:host {
+  all: initial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.bol-bhai-floating-shell {
+  position: fixed;
+  width: 56px;
+  height: 56px;
+  pointer-events: auto;
+  user-select: none;
+  z-index: 2147483647;
+}
+
+.bol-bhai-mic-wrapper {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.bol-bhai-mic-button {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #ffffff;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+    rgba(0, 0, 0, 0.9);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.34),
+    0 6px 16px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(16px) saturate(150%);
+  cursor: pointer;
+  outline: none;
+  touch-action: none;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.bol-bhai-dismiss-button {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(12, 12, 14, 0.94);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.34);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.82);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease,
+    background 140ms ease;
+  z-index: 10;
+}
+
+.bol-bhai-mic-wrapper:hover .bol-bhai-dismiss-button,
+.bol-bhai-dismiss-button:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.bol-bhai-dismiss-button:hover {
+  background: rgba(239, 68, 68, 0.92);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.bol-bhai-mic-button:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.42),
+    0 10px 22px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.bol-bhai-mic-button:active {
+  transform: scale(0.98);
+}
+
+.bol-bhai-mic-button:focus-visible,
+.bol-bhai-popup-action:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.88);
+  outline-offset: 3px;
+}
+
+.bol-bhai-mic-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.bol-bhai-popup {
+  position: fixed;
+  width: 340px;
+  min-height: 248px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  color: #ffffff;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(10, 10, 12, 0.88);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(22px) saturate(160%);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease,
+    visibility 150ms ease;
+  visibility: hidden;
+  z-index: 2147483647;
+}
+
+.bol-bhai-popup-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  visibility: visible;
+}
+
+.bol-bhai-popup-header {
+  margin: 0 0 18px;
+}
+
+.bol-bhai-room-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bol-bhai-room-panel-close {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.bol-bhai-room-panel-close:hover {
+  color: #ffffff;
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.bol-bhai-room-panel-close:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.88);
+  outline-offset: 2px;
+}
+
+.bol-bhai-popup-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.bol-bhai-popup-header p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.bol-bhai-popup-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.bol-bhai-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.bol-bhai-settings-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.bol-bhai-field {
+  display: grid;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.bol-bhai-input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0;
+  outline: none;
+  padding: 0 12px;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.bol-bhai-input:focus {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+
+.bol-bhai-input[aria-invalid="true"] {
+  border-color: rgba(248, 113, 113, 0.8);
+}
+
+.bol-bhai-error {
+  margin: -4px 0 0;
+  color: #fca5a5;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.bol-bhai-global-error {
+  margin: 0 0 12px;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 12px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.28);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 10px 12px;
+}
+
+.bol-bhai-popup-action {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.bol-bhai-popup-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.bol-bhai-popup-action:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.bol-bhai-popup-action:disabled:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: none;
+}
+
+.bol-bhai-primary-action {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.bol-bhai-danger-action {
+  border-color: rgba(248, 113, 113, 0.22);
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.22);
+}
+
+.bol-bhai-close-button {
+  border: 0;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 8px 10px;
+}
+
+.bol-bhai-close-button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.bol-bhai-about {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.66);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.bol-bhai-about > :first-child {
+  grid-column: 1 / -1;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 750;
+}
+
+.bol-bhai-about strong {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.bol-bhai-loading {
+  min-height: 120px;
+}
+
+.bol-bhai-code-input {
+  text-transform: uppercase;
+}
+
+.bol-bhai-room-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bol-bhai-room-code-row strong {
+  color: #ffffff;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.bol-bhai-room-meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.64);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  padding: 12px;
+}
+
+.bol-bhai-room-meta strong {
+  color: #ffffff;
+  font-weight: 750;
+}
+
+.bol-bhai-members {
+  display: grid;
+  gap: 8px;
+  max-height: 180px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.bol-bhai-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.bol-bhai-member-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bol-bhai-mic-control {
+  display: grid;
+  gap: 6px;
+}
+
+.bol-bhai-member-row strong {
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bol-bhai-mic-button,
+  .bol-bhai-popup,
+  .bol-bhai-popup-action,
+  .bol-bhai-input {
+    transition: none;
+  }
+}
