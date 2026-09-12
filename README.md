@@ -130,16 +130,23 @@ adjust both apps against it.
 Nothing in production should point at `localhost`. Two things need deploying
 independently:
 
-1. **Server** (`apps/server`) — build with the provided `apps/server/Dockerfile`
-   (multi-stage: `pnpm deploy --legacy` produces a standalone `dist/` +
-   `node_modules`, which is verified to boot with `node dist/server.js`), or
-   run `pnpm --filter @bol-bhai/server build && node apps/server/dist/server.js`
-   directly on any Node 22+ host. It needs a public HTTPS/WSS-capable URL
-   (Socket.IO needs WebSocket upgrade support from whatever reverse proxy /
-   platform sits in front of it).
+1. **Server** (`apps/server`) — a `render.yaml` Blueprint is included, so on
+   Render this is "New → Blueprint → connect this repo" and it builds
+   `apps/server/Dockerfile` automatically. **Currently deployed at
+   https://bol-bhai-server.onrender.com** (Render free tier — it spins down
+   after inactivity, so the first request after a while can take ~50s while
+   it wakes back up; upgrade the Render plan to avoid that in real use).
+   Elsewhere: build with the same Dockerfile (multi-stage: `pnpm deploy --legacy`
+   produces a standalone `dist/` + `node_modules`, verified to boot with
+   `node dist/server.js`), or run
+   `pnpm --filter @bol-bhai/server build && node apps/server/dist/server.js`
+   directly on any Node 22+ host with a public HTTPS/WSS-capable URL (Socket.IO
+   needs WebSocket upgrade support from whatever reverse proxy/platform sits
+   in front of it).
 2. **Extension** — set `WXT_API_BASE_URL` to that server's HTTPS URL (in
    `apps/extension/.env.production`, see `.env.example`) before running
-   `pnpm --filter @bol-bhai/extension build`; the built extension in
+   `pnpm --filter @bol-bhai/extension build`; the current release build
+   already points at the Render URL above. The built extension in
    `.output/chrome-mv3` is what gets zipped and uploaded to the Chrome Web
    Store (or loaded unpacked for local testing).
 
