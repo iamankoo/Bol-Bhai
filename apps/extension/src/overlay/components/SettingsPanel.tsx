@@ -1,6 +1,9 @@
 import { memo, useCallback, type FormEvent } from "react";
 import { APP_CONFIG } from "../../core/config/appConfig";
 import { useUsernameForm } from "../../core/hooks/useUsernameForm";
+import { useExtensionUpdateInfo } from "../../core/hooks/useExtensionUpdateInfo";
+
+const GITHUB_RELEASES_URL = "https://github.com/iamankoo/Bol-Bhai/releases";
 
 type SettingsPanelProps = {
   username: string;
@@ -31,6 +34,8 @@ export const SettingsPanel = memo(function SettingsPanel({
   const handleResetOverlayPosition = useCallback(() => {
     void onResetOverlayPosition();
   }, [onResetOverlayPosition]);
+
+  const updateChannel = useExtensionUpdateInfo();
 
   return (
     <form className="bol-bhai-panel" onSubmit={handleSubmit}>
@@ -83,6 +88,20 @@ export const SettingsPanel = memo(function SettingsPanel({
         <span>About</span>
         <strong>Version</strong>
         <span>{APP_CONFIG.version}</span>
+        <strong>Updates</strong>
+        {updateChannel === "store" ? (
+          <span>Installed via the Chrome Web Store — updates automatically.</span>
+        ) : updateChannel === "unpacked" ? (
+          <span>
+            Loaded unpacked (dev build) — Chrome only auto-updates Web Store installs, so check{" "}
+            <a href={GITHUB_RELEASES_URL} target="_blank" rel="noreferrer">
+              GitHub Releases
+            </a>{" "}
+            for new versions.
+          </span>
+        ) : (
+          <span>Update status unavailable.</span>
+        )}
       </section>
     </form>
   );

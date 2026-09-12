@@ -1,5 +1,7 @@
 # Bol Bhai
 
+**Publisher:** Aniket Raj
+
 Bol Bhai is a real-time voice chat browser extension. Two or more friends open
 Bol Bhai in any tab, create or join a room, and talk over live WebRTC audio
 while they keep playing a browser game, watching a stream, or doing anything
@@ -168,6 +170,32 @@ Loading the extension locally: `pnpm --filter @bol-bhai/extension dev` (or
 `build`) then load `apps/extension/.output/chrome-mv3` as an unpacked
 extension via `chrome://extensions` (Developer Mode → Load unpacked).
 
+## Releases & updates
+
+Versioning is semver, tracked in `package.json` at the root and in each app
+(currently `1.0.0`). Release process: bump the version(s), `git tag vX.Y.Z`,
+push the tag, then `gh release create vX.Y.Z` (or the GitHub UI) with the
+built `.output/chrome-mv3` zipped as a release asset for anyone installing
+manually.
+
+**How the installed extension actually updates:**
+
+- **If published to the Chrome Web Store**, Chrome updates every install of
+  it automatically and silently in the background — this is entirely
+  browser-managed and not something the extension (or this repo) can opt in
+  or out of per user. There is no real "enable automatic updates" switch to
+  build into the app, because Chrome doesn't expose one to third-party
+  extensions; building a UI toggle that looked like it controlled this would
+  be misleading, so Settings instead just reports which situation applies.
+- **If loaded unpacked** (development, or a manually-distributed zip), Chrome
+  never auto-updates it — the user has to reinstall a new version by hand.
+  Settings shows a link to [GitHub Releases](https://github.com/iamankoo/Bol-Bhai/releases)
+  in this case.
+- Publishing to the Chrome Web Store itself is a manual, store-side step this
+  repo can't perform (a Google Developer account, a one-time $5 registration
+  fee, and a store listing submitted through the Chrome Web Store Developer
+  Dashboard) — see "Known limitations" below.
+
 ## Testing
 
 No automated test suite exists yet (no Vitest/Jest config or test files).
@@ -197,3 +225,9 @@ a committed automated suite.
   WebRTC (every peer connects to every other peer) has practical bandwidth/CPU
   limits well before that on typical consumer hardware; treat anything beyond
   a handful of simultaneous participants as unverified.
+- **Not published to the Chrome Web Store.** Real browser-managed silent
+  auto-update requires that; publishing is a manual, store-side step (Google
+  Developer account + one-time fee + store review) this repo cannot perform.
+  A `render.yaml` Blueprint is included for one-click backend hosting on
+  Render, but creating/authorizing that Render service is likewise something
+  only the account owner can do.

@@ -1,8 +1,9 @@
 {
   "name": "bol-bhai",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Production-grade browser extension workspace for Bol Bhai.",
+  "author": "Aniket Raj",
   "license": "UNLICENSED",
   "type": "module",
   "packageManager": "pnpm@11.17.0",

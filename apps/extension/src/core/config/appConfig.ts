@@ -14,5 +14,7 @@ export const APP_CONFIG = {
   name: "Bol Bhai",
   tagline: "Real-Time Browser Voice Chat",
   apiBaseUrl,
-  version: "0.1.0"
+  // Read from the built manifest instead of hardcoded here, so it can never
+  // drift from the version actually shipped in apps/extension/package.json.
+  version: browser.runtime.getManifest().version
 } as const;

@@ -1,8 +1,9 @@
 {
   "name": "@bol-bhai/server",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
+  "author": "Aniket Raj",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
