@@ -251,6 +251,15 @@ export class VoiceSessionManager {
     connection.ontrack = (event) => {
       logDev("Remote Track Received", { peerId, trackKind: event.track.kind });
 
+      // Chrome-only hint (not in the standard RTCRtpReceiver typings) telling
+      // the jitter buffer to minimize how much it buffers before playout,
+      // trading a little robustness against network jitter for lower latency
+      // — this is what "no buffering" actually means for a live audio track.
+      const receiver = event.receiver as RTCRtpReceiver & { playoutDelayHint?: number };
+      if ("playoutDelayHint" in receiver) {
+        receiver.playoutDelayHint = 0;
+      }
+
       if (event.streams[0]) {
         remoteAudioService.attachRemoteStream(peerId, event.streams[0]);
       }
