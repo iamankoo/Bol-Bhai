@@ -73,6 +73,7 @@ export class VoiceSessionManager {
   private readonly negotiatedPeerIds = new Set<PeerId>();
   private readonly controlChannelPeerIds = new Set<PeerId>();
   private readonly renegotiatingPeerIds = new Set<PeerId>();
+  private readonly pendingRenegotiationPeerIds = new Set<PeerId>();
   private readonly iceCandidateUnsubscribers = new Map<PeerId, () => void>();
   private unsubscribeSignalingMessages: (() => void) | null = null;
   private unsubscribeMediaStore: (() => void) | null = null;
@@ -138,6 +139,7 @@ export class VoiceSessionManager {
     this.negotiatedPeerIds.clear();
     this.controlChannelPeerIds.clear();
     this.renegotiatingPeerIds.clear();
+    this.pendingRenegotiationPeerIds.clear();
 
     remoteAudioService.destroy();
     this.peerConnectionManager.destroyAll();
@@ -180,6 +182,7 @@ export class VoiceSessionManager {
     this.negotiatedPeerIds.delete(peerId);
     this.controlChannelPeerIds.delete(peerId);
     this.renegotiatingPeerIds.delete(peerId);
+    this.pendingRenegotiationPeerIds.delete(peerId);
     this.iceCandidateService.clearPendingIceCandidates(peerId);
 
     remoteAudioService.detachRemoteStream(peerId);
@@ -200,8 +203,20 @@ export class VoiceSessionManager {
       if (connection.connectionState === "connected") {
         logDev("Connection Connected", { peerId });
       }
-      if (connection.iceConnectionState === "connected" || connection.iceConnectionState === "completed") {
+      if (
+        connection.iceConnectionState === "connected" ||
+        connection.iceConnectionState === "completed"
+      ) {
         logDev("ICE Connected", { peerId, iceState: connection.iceConnectionState });
+      }
+
+      // A local track added while this peer was still connecting can get its
+      // negotiationneeded event dropped (see handleRenegotiationNeeded) since
+      // the browser only re-fires that event based on signalingState, not our
+      // app-level "connected" gate. Retry it now that the gate is open.
+      if (pState === "connected" && this.pendingRenegotiationPeerIds.has(peerId)) {
+        this.pendingRenegotiationPeerIds.delete(peerId);
+        void this.handleRenegotiationNeeded(peerId);
       }
     };
 
@@ -255,11 +270,23 @@ export class VoiceSessionManager {
       return;
     }
 
+    if (connection.signalingState !== "stable") {
+      // Another SDP exchange is in flight; the browser re-fires
+      // negotiationneeded on its own once signalingState returns to
+      // "stable", so there is nothing to track here.
+      return;
+    }
+
     // Only renegotiate once the initial offer/answer/ICE handshake has fully
-    // completed; the initial handshake already covers tracks attached before
-    // it starts, and firing here mid-handshake would race the first offer.
+    // completed; firing here mid-handshake would race the first offer. Unlike
+    // signalingState, "connected" is an app-level gate the browser doesn't
+    // know about, so it will NOT re-fire negotiationneeded once this later
+    // becomes true (e.g. a user enabling their mic while ICE is still
+    // connecting would otherwise have that track silently never sent — see
+    // bindPeerConnectionState, which flushes this once the peer connects).
     const peerState = useVoiceSessionStore.getState().peerStates[peerId];
-    if (peerState !== "connected" || connection.signalingState !== "stable") {
+    if (peerState !== "connected") {
+      this.pendingRenegotiationPeerIds.add(peerId);
       return;
     }
 
@@ -384,7 +411,10 @@ export class VoiceSessionManager {
 
   private async startNegotiation(peerId: PeerId): Promise<void> {
     const peerState = useVoiceSessionStore.getState().peerStates[peerId];
-    if (this.negotiatedPeerIds.has(peerId) && (peerState === "connected" || peerState === "connecting")) {
+    if (
+      this.negotiatedPeerIds.has(peerId) &&
+      (peerState === "connected" || peerState === "connecting")
+    ) {
       return;
     }
 
@@ -475,9 +505,7 @@ export class VoiceSessionManager {
     return localMemberId.localeCompare(peerId) < 0;
   }
 
-  private toNegotiationConnectionState(
-    state: RTCPeerConnectionState
-  ): NegotiationConnectionState {
+  private toNegotiationConnectionState(state: RTCPeerConnectionState): NegotiationConnectionState {
     if (state === "connected") {
       return NEGOTIATION_CONNECTION_STATES.connected;
     }

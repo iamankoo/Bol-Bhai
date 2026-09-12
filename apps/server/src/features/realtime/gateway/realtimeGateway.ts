@@ -33,7 +33,15 @@ function registerClientEvents(io: RealtimeServer, logger: FastifyBaseLogger): vo
       await socket.join(result.data.roomCode);
       logger.debug({ socketId: socket.id, rooms: Array.from(socket.rooms) }, "[JOIN]");
 
-      socket.to(result.data.roomCode).emit(REALTIME_SERVER_EVENTS.peerReady, {
+      // Broadcast to everyone in the room INCLUDING the socket that just joined
+      // (io.to, not socket.to which would exclude it). Whether a member is
+      // allowed to initiate an offer is decided purely by comparing member ids
+      // (VoiceSessionManager.shouldInitiateNegotiation), independent of who
+      // joined first — if only the pre-existing member got this event, a room
+      // where the joiner's id happens to sort lower than the existing member's
+      // would never have anyone send an offer, since the existing member would
+      // be blocked from initiating and the joiner would never be told to try.
+      io.to(result.data.roomCode).emit(REALTIME_SERVER_EVENTS.peerReady, {
         roomCode: result.data.roomCode,
         socketId: socket.id
       });
