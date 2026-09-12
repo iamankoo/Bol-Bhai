@@ -7,6 +7,224 @@ Bol Bhai in any tab, create or join a room, and talk over live WebRTC audio
 while they keep playing a browser game, watching a stream, or doing anything
 else on the web — no separate app to switch to.
 
+## Installation
+
+Bol Bhai isn't on the Chrome Web Store yet (see "Chrome Web Store Status"
+below), so it's installed from a GitHub Release. This takes about a minute
+and needs nothing but Chrome — no terminal, no Node.js, no dev server.
+
+1. Open the [Bol Bhai Releases page](https://github.com/iamankoo/Bol-Bhai/releases).
+2. Open the latest release (currently **v1.0.0**).
+3. Under "Assets", download `bol-bhai-extension-v1.0.0.zip`.
+4. Extract the ZIP into a normal folder you'll keep around (e.g. Desktop or
+   Documents) — Chrome loads the extension directly from this folder, so
+   don't delete it afterwards.
+5. Open Google Chrome.
+6. Go to:
+   ```text
+   chrome://extensions/
+   ```
+7. Turn on **Developer mode** (toggle in the top-right corner).
+8. Click **Load unpacked**.
+9. Select the folder you extracted in step 4 — the one that directly
+   contains `manifest.json`.
+10. Bol Bhai should now appear in your installed extensions list.
+11. Click the puzzle-piece icon in Chrome's toolbar and **pin Bol Bhai** so
+    its icon stays visible — you'll use it to reopen the overlay (see "How
+    to Use Bol Bhai" below).
+
+That's the whole install — nothing to run afterwards.
+
+## Production Architecture
+
+The extension you just installed already talks to Bol Bhai's live backend;
+you don't need to run or configure anything yourself:
+
+```text
+Bol Bhai Extension (your Chrome)
+        ↓
+Production Backend — https://bol-bhai-server.onrender.com
+        ↓
+Socket.IO Signaling
+        ↓
+WebRTC (peer-to-peer)
+        ↓
+Live Voice
+```
+
+That backend runs on Render's free tier, which spins down after a period of
+inactivity. If nobody has used Bol Bhai in a while, the first room
+create/join can take up to ~50 seconds while it wakes back up — that's
+expected, not a bug. See "How it works, end to end" further below for the
+full signaling/WebRTC breakdown.
+
+## How to Use Bol Bhai
+
+### Step 1 — Open a new tab
+
+Open any new browser tab. Bol Bhai's small floating mic icon appears in the
+corner of the page. If you don't interact with it, it automatically
+disappears after about 5 seconds — it isn't meant to sit on screen
+permanently.
+
+### Step 2 — Reopen Bol Bhai
+
+If the icon has disappeared (auto-hidden, or you minimized it), click the
+**Bol Bhai icon in your Chrome toolbar** (the one you pinned during
+installation). That brings the floating icon back on the current tab.
+
+### Step 3 — Create a Room
+
+Click the floating icon to open its panel, then click **Create Room**.
+
+```text
+Open Bol Bhai
+→ Create Room
+→ Room is created
+```
+
+You'll land straight on the Room panel: your room code (e.g. `IN483921`),
+the current connection status, and the member list (just you, as host, so
+far).
+
+### Step 4 — Share the Room
+
+In the Room panel, click **Share Invite**. Depending on your
+device/browser, this opens either the native share sheet or a WhatsApp
+(`wa.me`) link, pre-filled with a message like "Join my Bol Bhai voice room:
+\<link\>". That link points to Bol Bhai's `/join/:code` page for your room.
+
+### Step 5 — Join the Room
+
+The person you invited opens that link. If they already have Bol Bhai
+installed, it recognizes the room code on that page and opens straight to
+the **Join Room** view with the code pre-filled — they still have to click
+**Join** themselves; opening the link does not join them automatically. If
+they don't have Bol Bhai installed, the page tells them that instead of
+showing a broken page.
+
+Anyone can also join manually at any time: open Bol Bhai → **Join Room** →
+type in the room code → **Join**.
+
+### Step 6 — Start Voice Chat
+
+The microphone is **off by default** for everyone who joins — nothing is
+sent anywhere until a participant explicitly turns it on. In the Room
+panel:
+
+- First click: **Enable Microphone** — Chrome asks for microphone
+  permission, then your mic starts.
+- After that: the same button toggles **Mute Microphone** / **Unmute
+  Microphone** without leaving the room.
+
+Once participants have their mics enabled and the connection is
+established, you can talk in real time.
+
+### Step 7 — Minimize Bol Bhai
+
+You can hide the floating icon and panel at any time — hover over the
+floating mic icon and click the small **×** that appears, or simply let it
+auto-hide. **Minimizing does not end your call or leave the room** — the
+voice connection and your mic state keep running; only the visible UI is
+hidden. Bring it back anytime with the toolbar icon (Step 2).
+
+### Step 8 — Leave the Room
+
+To actually end your participation, open the Room panel and click **Leave
+Room**. This is the action that ends the call for you — closing the panel
+or minimizing the overlay does not.
+
+## PUBG / Gaming Use Case
+
+```text
+Friend A:
+Install Bol Bhai
+→ Create Room
+→ Share invite through WhatsApp
+
+Friend B:
+Open invite
+→ Join Room
+
+Both:
+→ Enable microphone
+→ Talk in real time
+→ Continue playing their game
+```
+
+Bol Bhai provides browser-based, real-time voice communication that keeps
+running while you continue using the web — it does not integrate with or
+inject itself into PUBG or any other specific game.
+
+## Troubleshooting
+
+**Microphone not working**
+
+- Check that Chrome has microphone permission granted (look for a
+  blocked-mic icon in the address bar; click it to allow, then click
+  "Enable Microphone" in Bol Bhai again).
+- Confirm the mic button in the Room panel actually reads "Mute Microphone"
+  (meaning it's active) rather than "Enable Microphone" (not started yet).
+- Make sure the correct microphone is selected as your system/Chrome
+  default input device.
+
+**Cannot connect**
+
+- Check your internet connection.
+- The production backend can take up to ~50 seconds to respond on the very
+  first request after sitting idle (Render free-tier cold start) — wait a
+  little before assuming it's broken.
+- Make sure both people are using the current release of the extension.
+- Try reopening the Room panel via the toolbar icon (Step 2) rather than
+  leaving it in a stuck state.
+
+**Extension does not appear**
+
+- Confirm **Developer mode** is enabled and Bol Bhai is listed and enabled
+  at `chrome://extensions/`.
+- Make sure the folder you selected in **Load unpacked** is the actual
+  extracted extension folder — the one that directly contains
+  `manifest.json` — not the `.zip` file or a parent folder.
+- If a tab was already open before you installed Bol Bhai, that tab won't
+  have it — refresh the tab (extensions only load into tabs opened or
+  reloaded after installation).
+
+## Production vs Development
+
+**Normal user** — this is all you need:
+
+```text
+Download release
+→ Extract
+→ Load unpacked
+→ Use Bol Bhai
+```
+
+No terminal required.
+
+**Developer** — if you're working on Bol Bhai's own code, see the
+"Development" section further below for the pnpm/Turborepo commands. Those
+build a local copy pointed at whatever server you happen to be running, so
+they're not the right instructions for normal installation.
+
+## Chrome Web Store Status
+
+**Bol Bhai is not yet published on the Chrome Web Store.** The current, and
+only, installation method is:
+
+**GitHub Release → Load unpacked** (see "Installation" above).
+
+## Platform Limitations
+
+- **Chromium-based browsers only** — built and tested on Google Chrome
+  (Manifest V3). Firefox, Safari, and other non-Chromium browsers are not
+  supported.
+- **Not on the Chrome Web Store** — Chrome shows a "Developer mode
+  extensions" notice for unpacked installs like this one; that's expected,
+  not a sign of a problem.
+- See "Known limitations" further below for the full technical list (no
+  TURN server, no accounts/persistence, room size cap, etc.).
+
 ## How it works, end to end
 
 ```text
