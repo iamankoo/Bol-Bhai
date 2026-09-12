@@ -3,7 +3,14 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**"]
+      "outputs": ["dist/**", ".output/**"],
+      "env": ["WXT_API_BASE_URL", "WXT_TURN_URL", "WXT_TURN_USERNAME", "WXT_TURN_CREDENTIAL"]
+    },
+    "@bol-bhai/extension#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".output/**"],
+      "env": ["WXT_API_BASE_URL", "WXT_TURN_URL", "WXT_TURN_USERNAME", "WXT_TURN_CREDENTIAL"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.production", ".env.production.local", ".env.local"]
     },
     "lint": {
       "dependsOn": ["^build"],
